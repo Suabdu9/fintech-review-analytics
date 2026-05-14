@@ -1,9 +1,13 @@
 from google_play_scraper import reviews, Sort
 import pandas as pd
+import os
 
 
-APP_ID = "com.combanketh.mobilebanking"
-BANK_NAME = "Commercial Bank of Ethiopia"
+BANK_APPS = {
+    "Commercial Bank of Ethiopia": "com.combanketh.mobilebanking",
+    "Bank of Abyssinia": "com.boa.boaMobileBanking",
+    "Dashen Bank": "com.dashen.dashensuperapp"
+}
 
 
 def fetch_reviews(app_id, bank_name, count=500):
@@ -33,10 +37,10 @@ def fetch_reviews(app_id, bank_name, count=500):
 def preprocess_reviews(df):
     initial_count = len(df)
 
-    # Remove duplicates
+    # Remove duplicate reviews
     df = df.drop_duplicates(subset=["review_id"])
 
-    # Drop missing values
+    # Remove rows with missing review or rating
     df = df.dropna(subset=["review", "rating"])
 
     final_count = len(df)
@@ -49,21 +53,34 @@ def preprocess_reviews(df):
 
 
 def main():
-    df = fetch_reviews(APP_ID, BANK_NAME)
+    all_reviews = []
 
-    cleaned_df = preprocess_reviews(df)
+    for bank_name, app_id in BANK_APPS.items():
+        print(f"\nScraping reviews for {bank_name}...")
 
-    cleaned_df = cleaned_df[
+        df = fetch_reviews(app_id, bank_name)
+
+        print(f"Collected {len(df)} reviews.")
+
+        cleaned_df = preprocess_reviews(df)
+
+        all_reviews.append(cleaned_df)
+
+    final_df = pd.concat(all_reviews, ignore_index=True)
+
+    final_df = final_df[
         ["review", "rating", "date", "bank", "source"]
     ]
 
-    cleaned_df.to_csv(
-        "data/raw/cbe_reviews.csv",
+    os.makedirs("data/raw", exist_ok=True)
+
+    final_df.to_csv(
+        "data/raw/bank_reviews.csv",
         index=False
     )
 
-    print(cleaned_df.head())
-    print("CBE reviews saved successfully.")
+    print("\nDataset saved successfully.")
+    print(final_df.head())
 
 
 if __name__ == "__main__":
