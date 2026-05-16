@@ -3,3 +3,12 @@ pandas
 numpy 
 jupyter 
 pytest
+transformers 
+torch 
+scikit-learn 
+spacy 
+nltk 
+matplotlib 
+seaborn
+wordcloud
+vaderSentiment
