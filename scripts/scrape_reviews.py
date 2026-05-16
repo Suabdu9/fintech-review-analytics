@@ -16,29 +16,44 @@ BANK_APPS = {
 
 
 def fetch_reviews(app_id, bank_name, count=500):
-    # Fetch reviews for the specified banking app
-    result, _ = reviews(
-        app_id,
-        lang="en",
-        country="et",
-        sort=Sort.NEWEST,
-        count=count
-    )
+    """
+    Fetch reviews for a banking application
+    from the Google Play Store.
+    """
 
-    data = []
-    # Extract relevant information from each review
+    try:
 
-    for review in result:
-        data.append({
-            "review_id": review.get("reviewId"),
-            "review": review.get("content"),
-            "rating": review.get("score"),
-            "date": review.get("at").strftime("%Y-%m-%d") if review.get("at") else None,
-            "bank": bank_name,
-            "source": "Google Play"
-        })
+        result, _ = reviews(
+            app_id,
+            lang="en",
+            country="et",
+            sort=Sort.NEWEST,
+            count=count
+        )
 
-    return pd.DataFrame(data)
+        data = []
+
+        for review in result:
+
+            data.append({
+                "review_id": review.get("reviewId"),
+                "review": review.get("content"),
+                "rating": review.get("score"),
+                "date": review.get("at").strftime("%Y-%m-%d")
+                if review.get("at") else None,
+                "bank": bank_name,
+                "source": "Google Play"
+            })
+
+        print(f"Successfully scraped {len(data)} reviews for {bank_name}")
+
+        return pd.DataFrame(data)
+
+    except Exception as e:
+
+        print(f"Error scraping reviews for {bank_name}: {e}")
+
+        return pd.DataFrame()
 
 
 def preprocess_reviews(df):
@@ -89,10 +104,18 @@ def main():
     os.makedirs("data/raw", exist_ok=True)
 
     # Save the cleaned dataset to a CSV file
-    final_df.to_csv(
-        "data/raw/bank_reviews.csv",
-        index=False
-    )
+    try:
+
+        final_df.to_csv(
+            "data/raw/bank_reviews.csv",
+             index=False
+        )
+
+        print("Dataset saved successfully.")
+
+    except Exception as e:
+
+      print(f"Error saving dataset: {e}")
 
     print("\nDataset saved successfully.")
     print(final_df.head())
