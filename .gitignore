@@ -1,7 +1,21 @@
-data/
-*.csv
+# Ignore datasets
+data/raw/*.csv
+data/processed/*.csv
+
+# Ignore databases
 *.db
+
+# Python cache
 __pycache__/
+
+# Jupyter checkpoints
 .ipynb_checkpoints/
+
+# Virtual environment
 venv/
+
+# Environment variables
 .env
+
+# Ignore generated plots
+plots/*.png

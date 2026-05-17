@@ -53,6 +53,22 @@ Final dataset columns:
 - `bank`
 - `source`
 
+## Output Directories
+
+The project generates outputs in the following directories:
+
+- data/raw/
+  Stores scraped review datasets.
+
+- data/processed/
+  Stores cleaned and analyzed datasets.
+
+- plots/
+  Stores generated visualizations and exported figures.
+
+- notebooks/
+  Stores exploratory and analytical Jupyter notebooks.
+
 ### Data Quality Summary
 
 - Target: 400+ reviews per bank
